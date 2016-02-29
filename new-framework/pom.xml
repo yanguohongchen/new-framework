@@ -7,6 +7,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>new-framework-core</module>
+		<module>new-framework-persistence-springjdbc</module>
 	</modules>
 
 	<repositories>
