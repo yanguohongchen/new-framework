@@ -27,7 +27,7 @@ public class BaseDao<E> implements IBaseDao<E>
 
 	private Class<E> entityClass;
 
-	protected static Map<String, HashSet<String>> classFieldsList;
+	protected static Map<String, HashSet<String>> classFieldsList = new HashMap<String, HashSet<String>>();
 
 	@Autowired
 	protected JdbcTemplate jdbcTemplate;
@@ -51,18 +51,17 @@ public class BaseDao<E> implements IBaseDao<E>
 		sql.append("select ");
 		for (String field : fields)
 		{
-			sql.append(field);
+			sql.append(underscoreName(field));
 			sql.append(",");
 		}
 		sql.deleteCharAt(sql.length() - 1);
 		sql.append(" from ");
-		sql.append(entityClass.getSimpleName());
+		sql.append(underscoreName(entityClass.getSimpleName()));
 		sql.append(" where ");
 		sql.append(idName);
 		sql.append("=?");
 		logger.debug("当前执行sql为:" + sql);
-		E entity = jdbcTemplate.queryForObject(sql.toString(), new BeanPropertyRowMapper<E>(entityClass), new Object[] { id });
-		return entity;
+		return jdbcTemplate.queryForObject(sql.toString(), new BeanPropertyRowMapper<E>(entityClass), new Object[] { id });
 	}
 
 	@Override
@@ -70,7 +69,7 @@ public class BaseDao<E> implements IBaseDao<E>
 	{
 		StringBuffer sql = new StringBuffer();
 		sql.append("delete from ");
-		sql.append(entityClass.getSimpleName());
+		sql.append(underscoreName(entityClass.getSimpleName()));
 		sql.append(" where ");
 		sql.append(idName);
 		sql.append("=?");
@@ -136,7 +135,7 @@ public class BaseDao<E> implements IBaseDao<E>
 		for (String field : fields.keySet())
 		{
 			sql.append(underscoreName(field));
-			sql.append("=? and ");
+			sql.append("= ? and ");
 			valueArr[i] = fields.get(field);
 		}
 		sql.deleteCharAt(sql.length() - 1);
@@ -145,7 +144,7 @@ public class BaseDao<E> implements IBaseDao<E>
 		sql.deleteCharAt(sql.length() - 1);
 		sql.append(" where ");
 		sql.append(idName);
-		sql.append("=?");
+		sql.append("= ?");
 		try
 		{
 			Field fie = e.getClass().getDeclaredField(idName);
