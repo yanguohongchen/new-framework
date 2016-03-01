@@ -2,7 +2,6 @@ package com.sea.framework;
 
 public enum Role
 {
-
 	/**
 	 * 超级管理员
 	 */

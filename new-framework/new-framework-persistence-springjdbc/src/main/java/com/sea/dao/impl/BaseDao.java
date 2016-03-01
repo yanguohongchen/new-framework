@@ -89,14 +89,14 @@ public class BaseDao<E> implements IBaseDao<E>
 		Map<String, Object> fields = getRefectEntityInfo(e);
 		StringBuffer sql = new StringBuffer();
 		sql.append("insert into ");
-		sql.append(e.getClass().getSimpleName());
+		sql.append(underscoreName(e.getClass().getSimpleName()));
 		sql.append("(");
 		StringBuffer param = new StringBuffer();
 		Object[] valueArr = new Object[fields.keySet().size()];
 		int i = 0;
 		for (String field : fields.keySet())
 		{
-			sql.append(field);
+			sql.append(underscoreName(field));
 			sql.append(",");
 			param.append("?");
 			param.append(",");
@@ -129,13 +129,13 @@ public class BaseDao<E> implements IBaseDao<E>
 		// UPDATE 表名称 SET 列名称 = 新值 WHERE 列名称 = 某值
 		StringBuffer sql = new StringBuffer();
 		sql.append(" update ");
-		sql.append(e.getClass().getSimpleName());
+		sql.append(underscoreName(e.getClass().getSimpleName()));
 		sql.append(" set ");
 		Object[] valueArr = new Object[fields.keySet().size() + 1];
 		int i = 0;
 		for (String field : fields.keySet())
 		{
-			sql.append(field);
+			sql.append(underscoreName(field));
 			sql.append("=? and ");
 			valueArr[i] = fields.get(field);
 		}
