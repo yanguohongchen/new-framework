@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
 
 import com.sea.exception.DeniedException;
+import com.sea.user.entity.UserEntity;
+import com.sea.user.service.IUserService;
 
 public class Session
 {
@@ -33,8 +35,6 @@ public class Session
 					loginAuth(request);
 				} else if (fireAuthority.role() != null)
 				{
-					// /TODO:获取用户信息，获取权限，比对。配置角色名字
-					logger.info("认证通过！");
 					permissionAuth(request, fireAuthority.role());
 				} else if (fireAuthority.loginStatus().equals(LoginStatus.NO_LOGIN))
 				{
@@ -49,9 +49,27 @@ public class Session
 
 	private void permissionAuth(HttpServletRequest request, Role[] roles)
 	{
-		// TODO:获取用户角色即可
-//		String sid = request.getParameter("sid");
-
+		String token = request.getHeader("token");
+		String username = token.split(":")[0];
+		IUserService userService = SpringUtils.getBean("userService");
+		UserEntity user = userService.getUserByUserName(username);
+		String roleString = user.getRoles();
+		String[] roleIdArr = roleString.split(",");
+		boolean flag = false;
+		for (Role role : roles)
+		{
+			for (String roleId : roleIdArr)
+			{
+				if (String.valueOf(role.getRoleId()).equals(roleId))
+				{
+					flag = true;
+				}
+			}
+		}
+		if (flag)
+		{
+			throw new DeniedException("角色不匹配！");
+		}
 	}
 
 	private void loginAuth(HttpServletRequest request)
@@ -63,9 +81,8 @@ public class Session
 			throw new DeniedException("对不起，请先登录！");
 		} else
 		{
-			User user = new User();
-			user.setUsername(request.getHeader("username"));
-			TokenUtil.validateToken(token, user);
+			TokenUtil.validateToken(token);
 		}
 	}
+
 }

@@ -44,8 +44,6 @@ public class GlobalExceptionHandler
 		logger.warn(ex.getMessage(), ex);
 		return new MsgResult(Status.DeniedException.toString(), ex.getMessage());
 	}
-
-	
 	
 	@ExceptionHandler(BindException.class)
 	@ResponseBody
