@@ -46,8 +46,8 @@ public class TokenUtil
 
 	public static void clientValidator(HttpServletRequest request)
 	{
-		String clientId = request.getHeader("client_id");
-		String clientSecret = request.getHeader("client_secret");
+		String clientId = request.getParameter("client_id");
+		String clientSecret = request.getParameter("client_secret");
 		if (clientId == null)
 		{
 			throw new DeniedException("客户端不存在！");

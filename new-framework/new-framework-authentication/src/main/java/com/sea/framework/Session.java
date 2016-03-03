@@ -49,7 +49,7 @@ public class Session
 
 	private void permissionAuth(HttpServletRequest request, Role[] roles)
 	{
-		String token = request.getHeader("token");
+		String token = request.getParameter("token");
 		String username = token.split(":")[0];
 		IUserService userService = SpringUtils.getBean("userService");
 		UserEntity user = userService.getUserByUserName(username);
@@ -75,7 +75,7 @@ public class Session
 	private void loginAuth(HttpServletRequest request)
 	{
 		TokenUtil.clientValidator(request);
-		String token = request.getHeader("token");
+		String token = request.getParameter("token");
 		if (token == null || token.equals(""))
 		{
 			throw new DeniedException("对不起，请先登录！");
