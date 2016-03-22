@@ -23,8 +23,6 @@ public class RedisClusterUtil
 
 	private void getRedisInstances(String redisClusterString)
 	{
-		// String redisClusterString =
-		// "192.168.140.120:6380,192.168.140.120:6381,192.168.140.120:6382";
 		String[] redisArr = redisClusterString.split(",");
 		for (String redis : redisArr)
 		{

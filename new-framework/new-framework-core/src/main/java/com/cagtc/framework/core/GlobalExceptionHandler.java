@@ -17,26 +17,25 @@ import com.cagtc.framework.exception.DeniedException;
 @ControllerAdvice
 public class GlobalExceptionHandler
 {
-	
+
 	private final static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class.getName());
 
 	@ExceptionHandler(Exception.class)
 	@ResponseBody
 	public MsgResult handleException(Exception ex, HttpServletRequest request)
 	{
-	
 		logger.error(ex.getMessage(), ex);
-		return new MsgResult(Status.ServerException.toString(),"出错啦！");
+		return new MsgResult(Status.ServerException.toString(), "出错啦！");
 	}
 
 	@ExceptionHandler(BusinessException.class)
 	@ResponseBody
-	public MsgResult handleBusinessException(Exception ex, HttpServletRequest request)
+	public MsgResult handleBusinessException(BusinessException ex, HttpServletRequest request)
 	{
-		logger.warn(ex.getMessage(), ex);
-		return new MsgResult(Status.BusinessException.toString(), ex.getMessage());
+		logger.info(ex.getMessage(), ex);
+		return new MsgResult(Status.BusinessException.toString(), ex.getCode() + ":" + ex.getMessage());
 	}
-	
+
 	@ExceptionHandler(DeniedException.class)
 	@ResponseBody
 	public MsgResult handleDeniedException(Exception ex, HttpServletRequest request)
@@ -44,7 +43,7 @@ public class GlobalExceptionHandler
 		logger.warn(ex.getMessage(), ex);
 		return new MsgResult(Status.DeniedException.toString(), ex.getMessage());
 	}
-	
+
 	@ExceptionHandler(BindException.class)
 	@ResponseBody
 	public MsgResult handleBindException(BindException ex, HttpServletRequest request)

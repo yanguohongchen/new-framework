@@ -10,8 +10,7 @@ public class BusinessException extends Exception
 {
 
 	private static final long serialVersionUID = 1L;
-	
-	
+
 	private int code;
 
 	public BusinessException()
@@ -33,6 +32,12 @@ public class BusinessException extends Exception
 		super(message, cause);
 	}
 
+	public BusinessException(EnumVal errorCode)
+	{
+		this(errorCode.getMsg());
+		this.code = errorCode.getCode();
+	}
+
 	public int getCode()
 	{
 		return code;
@@ -42,7 +47,5 @@ public class BusinessException extends Exception
 	{
 		this.code = code;
 	}
-	
-	
 
 }
