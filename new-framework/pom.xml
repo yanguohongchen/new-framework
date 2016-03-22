@@ -45,6 +45,8 @@
 	<!-- 属性声明 -->
 	<properties>
 		<spring.version>4.1.1.RELEASE</spring.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.targetJDK>1.7</project.build.targetJDK>
 	</properties>
 
 	<dependencyManagement>
