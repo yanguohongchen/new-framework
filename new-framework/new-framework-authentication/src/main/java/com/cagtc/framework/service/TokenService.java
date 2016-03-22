@@ -3,6 +3,8 @@ package com.cagtc.framework.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import redis.clients.jedis.JedisCluster;
+
 import com.cagtc.framework.auth.RedisClusterUtil;
 import com.cagtc.framework.auth.TokenUtil;
 
@@ -25,13 +27,15 @@ public class TokenService implements ITokenService
 		tokenBuilder.append(expires);
 		tokenBuilder.append(":");
 		tokenBuilder.append(TokenUtil.computeSignature(username, expires));
-		redisClusterUtil.getJc().set(TOKENKEY + username, tokenBuilder.toString());
+		JedisCluster jedisCluster = redisClusterUtil.getJc();
+		jedisCluster.set(TOKENKEY + username, tokenBuilder.toString());
 		return tokenBuilder.toString();
 	}
 
 	@Override
 	public String getToken(String username)
 	{
-		return redisClusterUtil.getJc().get(TOKENKEY + username);
+		JedisCluster jedisCluster = redisClusterUtil.getJc();
+		return jedisCluster.get(TOKENKEY + username);
 	}
 }

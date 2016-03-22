@@ -25,7 +25,7 @@ public class TokenUtil
 		return DigestUtils.md5Hex(signatureBuilder.toString());
 	}
 
-	protected static void validateToken(String authToken)
+	protected static void validateToken(String authToken) 
 	{
 		if("".equals(authToken)||"null".equals(authToken)){
 			throw new DeniedException("请先登录！");

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 
@@ -13,23 +15,32 @@ public class RedisClusterUtil
 
 	private JedisCluster jc;
 
-	public RedisClusterUtil()
+	public RedisClusterUtil(String redisClusterString, int maxIdle, int maxTotal)
 	{
-		getRedisInstances();
-		initRedisPool();
+		getRedisInstances(redisClusterString);
+		initRedisPool(maxIdle, maxTotal);
 	}
 
-
-	private void getRedisInstances()
+	private void getRedisInstances(String redisClusterString)
 	{
-		jedisClusterNodes.add(new HostAndPort("192.168.140.120", 6380));
-		jedisClusterNodes.add(new HostAndPort("192.168.140.120", 6381));
-		jedisClusterNodes.add(new HostAndPort("192.168.140.120", 6382));
+		// String redisClusterString =
+		// "192.168.140.120:6380,192.168.140.120:6381,192.168.140.120:6382";
+		String[] redisArr = redisClusterString.split(",");
+		for (String redis : redisArr)
+		{
+			String ip = redis.split(",")[0];
+			int port = Integer.parseInt(redis.split(",")[1]);
+			jedisClusterNodes.add(new HostAndPort(ip, port));
+		}
 	}
 
-	public void initRedisPool()
+	public void initRedisPool(int maxIdle, int maxTotal)
 	{
-		jc = new JedisCluster(jedisClusterNodes);
+		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
+		genericObjectPoolConfig.setMaxIdle(maxIdle);
+		genericObjectPoolConfig.setMaxTotal(maxTotal);
+		genericObjectPoolConfig.setTestOnBorrow(false);
+		jc = new JedisCluster(jedisClusterNodes, genericObjectPoolConfig);
 	}
 
 	public void destoryRedisPool() throws IOException
@@ -40,23 +51,5 @@ public class RedisClusterUtil
 	public JedisCluster getJc()
 	{
 		return jc;
-	}
-
-	public static void main(String[] args)
-	{
-		RedisClusterUtil redisCluserUtil = new RedisClusterUtil();
-		redisCluserUtil.initRedisPool();
-		JedisCluster jc = redisCluserUtil.getJc();
-		jc.set("foo", "bar");
-		jc.expire("foo", 60 * 3);
-		String value = jc.get("foo");
-		System.out.println(value);
-		try
-		{
-			redisCluserUtil.destoryRedisPool();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.cagtc.framework.auth;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class Session
 
 	protected Map<String, String[]> params = new HashMap<>();
 
-	public Session(HttpServletRequest request, HttpServletResponse response, Object handler)
+	public Session(HttpServletRequest request, HttpServletResponse response, Object handler) 
 	{
 		if (handler instanceof HandlerMethod)
 		{
@@ -61,6 +62,7 @@ public class Session
 	 * 登录验证
 	 * 
 	 * @param request
+	 * @throws IOException 
 	 */
 	private void loginAuth(HttpServletRequest request)
 	{
