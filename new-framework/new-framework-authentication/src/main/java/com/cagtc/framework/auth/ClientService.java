@@ -2,7 +2,6 @@ package com.cagtc.framework.auth;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -19,9 +18,6 @@ public class ClientService implements IClientService
 		clients.put("PHONECLIENT", "!sdfioaflksdxcijvn");
 		clients.put("OTHERCLIENT", "!sdfioaflksdxcijvn");
 	}
-
-	@Autowired
-	private RedisClusterUtil redisClusterUtil;
 
 	@Override
 	public Client getClient(String clientId)
