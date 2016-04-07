@@ -1,4 +1,4 @@
-package com.cagtc.framework.auth;
+package com.cagtc.framework.redis;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
@@ -15,7 +15,7 @@ public class JedisPoolUtil
 		genericObjectPoolConfig.setMaxIdle(maxIdle);
 		genericObjectPoolConfig.setMaxTotal(maxTotal);
 		genericObjectPoolConfig.setTestOnBorrow(false);
-		jedisPool = new JedisPool(genericObjectPoolConfig, host, port);
+		jedisPool = new JedisPool(genericObjectPoolConfig, host.trim(), port);
 	}
 
 	public Jedis getJedis()

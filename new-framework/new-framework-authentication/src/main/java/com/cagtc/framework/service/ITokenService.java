@@ -1,9 +1,11 @@
 package com.cagtc.framework.service;
 
+import com.cagtc.framework.auth.SessionData;
+
 
 public interface ITokenService
 {
-	String createToken(String username);
+	SessionData createSessionData(String username);
 
-	String getToken(String username);
+	SessionData getSessionData(String username);
 }

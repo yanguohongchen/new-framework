@@ -3,9 +3,9 @@ package com.cagtc.framework.core;
 public class MsgResult
 {
 
-	public MsgResult(String status, String msg)
+	public MsgResult(String code, String msg)
 	{
-		this(null, status, msg);
+		this(null, code, msg);
 	}
 
 	public MsgResult()
@@ -17,27 +17,26 @@ public class MsgResult
 		this.data = data;
 	}
 
-	public MsgResult(Object data, String status, String msg)
+	public MsgResult(Object data, String code, String msg)
 	{
 		this.data = data;
-		this.status = status;
+		this.code = code;
 		this.msg = msg;
 	}
 
-	private String status = Status.OK.toString();
+	private String code = Status.OK.toString();
 
 	private String msg = "success";
 
 	protected Object data;
 
-	public String getStatus()
-	{
-		return status;
+
+	public String getCode() {
+		return code;
 	}
 
-	public void setStatus(String status)
-	{
-		this.status = status;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getMsg()

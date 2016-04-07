@@ -18,9 +18,11 @@ public class Session
 
 	private final static Logger logger = LoggerFactory.getLogger(Session.class.getName());
 
+	private SessionData sessionData = new SessionData();
+
 	protected Map<String, String[]> params = new HashMap<>();
 
-	public Session(HttpServletRequest request, HttpServletResponse response, Object handler) 
+	public Session(HttpServletRequest request, HttpServletResponse response, Object handler)
 	{
 		if (handler instanceof HandlerMethod)
 		{
@@ -62,19 +64,28 @@ public class Session
 	 * 登录验证
 	 * 
 	 * @param request
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void loginAuth(HttpServletRequest request)
 	{
 		TokenUtil.clientValidator(request);
+		
+		
 		String token = request.getParameter("token");
 		if (token == null || token.equals(""))
 		{
+			//TODO:获取 cookie信息，如果商城或者手机端已经登录，生成token，并返回。
 			throw new DeniedException("对不起，请先登录！");
 		} else
 		{
-			TokenUtil.validateToken(token);
+			SessionData sessionData = TokenUtil.validateToken(token);
+			this.sessionData = sessionData;
 		}
+	}
+
+	public SessionData getUser()
+	{
+		return sessionData;
 	}
 
 }

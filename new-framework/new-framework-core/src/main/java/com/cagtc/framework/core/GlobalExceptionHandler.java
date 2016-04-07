@@ -32,7 +32,7 @@ public class GlobalExceptionHandler
 	@ResponseBody
 	public MsgResult handleBusinessException(BusinessException ex, HttpServletRequest request)
 	{
-		logger.info(ex.getMessage(), ex);
+		logger.info(ex.getMessage());
 		return new MsgResult(Status.BusinessException.toString(), ex.getCode() + ":" + ex.getMessage());
 	}
 

@@ -10,6 +10,8 @@ import com.cagtc.framework.service.ITokenService;
 public class TokenUtil
 {
 
+	//将token当做key，数据内容当做value
+	
 	protected static String MAGIC_KEY = "sdf8423@#$@^fsdf";
 
 	public static String computeSignature(String username, long expires)
@@ -25,7 +27,7 @@ public class TokenUtil
 		return DigestUtils.md5Hex(signatureBuilder.toString());
 	}
 
-	protected static void validateToken(String authToken) 
+	protected static SessionData validateToken(String authToken) 
 	{
 		if("".equals(authToken)||"null".equals(authToken)){
 			throw new DeniedException("请先登录！");
@@ -38,11 +40,12 @@ public class TokenUtil
 			throw new DeniedException("token 已过期！");
 		}
 		ITokenService tokenService = SpringUtils.getBean("tokenService");
-		String tokenRedis = tokenService.getToken(username);
-		if (!authToken.equals(tokenRedis))
+		SessionData tokenRedis = tokenService.getSessionData(username);
+		if (!authToken.equals(tokenRedis.getAccessToken()))
 		{
 			throw new DeniedException("token 不匹配！");
 		}
+		return tokenRedis;
 	}
 
 	public static void clientValidator(HttpServletRequest request)
