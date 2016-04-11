@@ -40,7 +40,7 @@ public class GlobalExceptionHandler
 	@ResponseBody
 	public MsgResult handleDeniedException(Exception ex, HttpServletRequest request)
 	{
-		logger.warn(ex.getMessage(), ex);
+		logger.debug(ex.getMessage(), ex);
 		return new MsgResult(Status.DeniedException.toString(), ex.getMessage());
 	}
 

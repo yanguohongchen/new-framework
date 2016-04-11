@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,9 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
 
 import com.cagtc.framework.exception.DeniedException;
+import com.cagtc.framework.service.IMallMobileAuthService;
+import com.cagtc.framework.service.IMallPcAuthService;
 
-public class Session
-{
+public class Session {
 
 	private final static Logger logger = LoggerFactory.getLogger(Session.class.getName());
 
@@ -22,43 +24,24 @@ public class Session
 
 	protected Map<String, String[]> params = new HashMap<>();
 
-	public Session(HttpServletRequest request, HttpServletResponse response, Object handler)
-	{
-		if (handler instanceof HandlerMethod)
-		{
+	public Session(HttpServletRequest request, HttpServletResponse response, Object handler) {
+		if (handler instanceof HandlerMethod) {
 			HandlerMethod handler2 = (HandlerMethod) handler;
 			FireAuthority fireAuthority = handler2.getMethodAnnotation(FireAuthority.class);
 
-			if (fireAuthority != null)
-			{
-				if (fireAuthority.loginStatus().equals(LoginStatus.LOGIN))
-				{
-					loginAuth(request);
-				} else if (fireAuthority.role() != null)
-				{
+			if (fireAuthority != null) {
+				if (fireAuthority.loginStatus().equals(LoginStatus.LOGIN)) {
+					loginAuth(request, response);
+				} else if (fireAuthority.role() != null) {
 					// permissionAuth(request, fireAuthority.role());
-				} else if (fireAuthority.loginStatus().equals(LoginStatus.NO_LOGIN))
-				{
+				} else if (fireAuthority.loginStatus().equals(LoginStatus.NO_LOGIN)) {
 					logger.info("认证通过！");
-				} else
-				{
+				} else {
 					throw new DeniedException("权限验证失败！");
 				}
 			}
 		}
 	}
-
-	/*
-	 * private void permissionAuth(HttpServletRequest request, Role[] roles) {
-	 * String token = request.getParameter("token"); String username =
-	 * token.split(":")[0]; IUserService userService =
-	 * SpringUtils.getBean("userService"); UserEntity user =
-	 * userService.getUserByUserName(username); String roleString =
-	 * user.getRoles(); String[] roleIdArr = roleString.split(","); boolean flag
-	 * = false; for (Role role : roles) { for (String roleId : roleIdArr) { if
-	 * (String.valueOf(role.getRoleId()).equals(roleId)) { flag = true; } } } if
-	 * (flag) { throw new DeniedException("角色不匹配！"); } }
-	 */
 
 	/**
 	 * 登录验证
@@ -66,26 +49,59 @@ public class Session
 	 * @param request
 	 * @throws IOException
 	 */
-	private void loginAuth(HttpServletRequest request)
-	{
+	private void loginAuth(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Cookie> cookieMap = saveCookieToMap(request);
 		TokenUtil.clientValidator(request);
-		
-		
-		String token = request.getParameter("token");
-		if (token == null || token.equals(""))
-		{
-			//TODO:获取 cookie信息，如果商城或者手机端已经登录，生成token，并返回。
-			throw new DeniedException("对不起，请先登录！");
-		} else
-		{
+		Cookie cookie = getCookieByName(cookieMap, "token");
+		String token = cookie.getValue();
+		if (token == null || token.equals("")) {
+			// 获取手机
+			IMallMobileAuthService mallMobileAuthService = SpringUtils.getBean("mallMobileAuthService");
+			IMallPcAuthService mallPcAuthService = SpringUtils.getBean("mallPcAuthService");
+			// 渠道
+			String channel = request.getParameter("channel");
+			if ("mobile".equals(channel)) {
+				mallMobileAuthService.auth(request, response);
+			} else if ("pc".equals(channel)) {
+				mallPcAuthService.auth(request, response);
+			} else {
+				throw new DeniedException("对不起，请先登录！");
+			}
+		} else {
 			SessionData sessionData = TokenUtil.validateToken(token);
 			this.sessionData = sessionData;
 		}
 	}
 
-	public SessionData getUser()
-	{
+	public SessionData getUser() {
 		return sessionData;
+	}
+
+	/**
+	 * 从cookies中获取指定名字的cookie
+	 * 
+	 * @param request
+	 * @param name
+	 * @return
+	 */
+	private Cookie getCookieByName(Map<String, Cookie> cookieMap, String name) {
+		if (cookieMap.containsKey(name)) {
+			Cookie cookie = (Cookie) cookieMap.get(name);
+			return cookie;
+		} else {
+			return new Cookie("", "");
+		}
+	}
+
+	private Map<String, Cookie> saveCookieToMap(HttpServletRequest request) {
+		Map<String, Cookie> cookieMap = new HashMap<String, Cookie>();
+		Cookie[] cookies = request.getCookies();
+		if (null != cookies) {
+			for (Cookie cookie : cookies) {
+				cookieMap.put(cookie.getName(), cookie);
+			}
+		}
+		return cookieMap;
 	}
 
 }
