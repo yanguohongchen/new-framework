@@ -42,7 +42,6 @@ public class Session {
 			}
 		}
 	}
-
 	/**
 	 * 登录验证
 	 * 
@@ -53,17 +52,20 @@ public class Session {
 		Map<String, Cookie> cookieMap = saveCookieToMap(request);
 		TokenUtil.clientValidator(request);
 		Cookie cookie = getCookieByName(cookieMap, "token");
-		String token = cookie.getValue();
+		String token = "";
+		if (cookie != null) {
+			token = cookie.getValue();
+		}
 		if (token == null || token.equals("")) {
 			// 获取手机
 			IMallMobileAuthService mallMobileAuthService = SpringUtils.getBean("mallMobileAuthService");
 			IMallPcAuthService mallPcAuthService = SpringUtils.getBean("mallPcAuthService");
 			// 渠道
 			String channel = request.getParameter("channel");
-			if ("mobile".equals(channel)) {
-				mallMobileAuthService.auth(request, response);
+			if ("APP".equals(channel) || "wechat".equals(channel) || "wap".equals(channel)) {
+				this.sessionData = mallMobileAuthService.auth(request, response, channel);
 			} else if ("pc".equals(channel)) {
-				mallPcAuthService.auth(request, response);
+				this.sessionData = mallPcAuthService.auth(request, response);
 			} else {
 				throw new DeniedException("对不起，请先登录！");
 			}
@@ -89,7 +91,7 @@ public class Session {
 			Cookie cookie = (Cookie) cookieMap.get(name);
 			return cookie;
 		} else {
-			return new Cookie("", "");
+			return null;
 		}
 	}
 

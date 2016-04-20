@@ -7,6 +7,7 @@ import redis.clients.jedis.Jedis;
 
 import com.cagtc.framework.auth.SessionData;
 import com.cagtc.framework.auth.TokenUtil;
+import com.cagtc.framework.exception.DeniedException;
 import com.cagtc.framework.redis.JedisPoolUtil;
 import com.google.gson.Gson;
 
@@ -24,7 +25,7 @@ public class TokenService implements ITokenService {
 	@Override
 	public SessionData createSessionData(String username) {
 		/* Expires in one hour */
-		long expires = System.currentTimeMillis() + 1000L * 60 * 60;
+		long expires = System.currentTimeMillis() + 1000L * TokenUtil.expireTime;
 		StringBuilder tokenBuilder = new StringBuilder();
 		tokenBuilder.append(username);
 		tokenBuilder.append(":");
@@ -35,7 +36,7 @@ public class TokenService implements ITokenService {
 		sessionData.setAccessToken(tokenBuilder.toString());
 		try (Jedis jedis = jedisPoolUtil.getJedis()) {
 			jedis.set(TOKENKEY + username, new Gson().toJson(sessionData).toString());
-			jedis.expire(TOKENKEY + username, 60 * 60 * 4);
+			jedis.expire(TOKENKEY + username, TokenUtil.expireTime);
 		}
 		return sessionData;
 	}
@@ -54,13 +55,16 @@ public class TokenService implements ITokenService {
 	 */
 	@Override
 	public SessionData getUserInfoByDB(String username) {
-		// 登录验证
-
 		SessionData user = new SessionData();
 		UserVo userVo = userVoService.getUserVoByUsername(username);
+		if (userVo.getUsername() == null || userVo.getUsername().equals("")) {
+			throw new DeniedException("用户名不存在！");
+		}
 		user.setUsername(username);
 		user.setUserid(userVo.getUserid());
 		user.setPassword(userVo.getPasword());
+		user.setNickName(userVo.getNickname());
+		user.setEmail(userVo.getEmail());
 		return user;
 	}
 

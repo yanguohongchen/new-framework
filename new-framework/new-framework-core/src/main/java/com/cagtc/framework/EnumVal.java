@@ -1,4 +1,4 @@
-package com.cagtc.framework.exception;
+package com.cagtc.framework;
 
 public interface EnumVal {
 

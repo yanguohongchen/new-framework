@@ -9,12 +9,13 @@ public class JedisPoolUtil
 {
 	private JedisPool jedisPool;
 
-	public JedisPoolUtil(String host,int port, int maxIdle, int maxTotal)
+	public JedisPoolUtil(String host,int port, int maxIdle, int maxTotal,boolean testOnBorrow,int maxWaitMillis)
 	{
 		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
 		genericObjectPoolConfig.setMaxIdle(maxIdle);
 		genericObjectPoolConfig.setMaxTotal(maxTotal);
-		genericObjectPoolConfig.setTestOnBorrow(false);
+		genericObjectPoolConfig.setTestOnBorrow(testOnBorrow);
+		genericObjectPoolConfig.setMaxWaitMillis(maxWaitMillis);
 		jedisPool = new JedisPool(genericObjectPoolConfig, host.trim(), port);
 	}
 

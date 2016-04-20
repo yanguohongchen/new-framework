@@ -1,50 +1,40 @@
 package com.cagtc.framework.exception;
 
+import com.cagtc.framework.BaseServiceException;
+import com.cagtc.framework.EnumVal;
+
 /**
  * 业务异常
  * 
  * @author sea
  *
  */
-public class BusinessException extends Exception
-{
+public class BusinessException extends BaseServiceException implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 
 	private int code;
 
-	public BusinessException()
-	{
+	public BusinessException() {
+
 	}
 
-	public BusinessException(String message)
-	{
-		super(message);
+	public BusinessException(int bussinesCode, String msg) {
+		super(bussinesCode,msg);
 	}
 
-	public BusinessException(Throwable cause)
-	{
-		super(cause);
+	public BusinessException(EnumVal errorCode) {
+		this(errorCode.getCode(), errorCode.getMsg());
 	}
 
-	public BusinessException(String message, Throwable cause)
-	{
-		super(message, cause);
-	}
-
-	public BusinessException(EnumVal errorCode)
-	{
-		this(errorCode.getMsg());
-		this.code = errorCode.getCode();
-	}
-
-	public int getCode()
-	{
+	public int getCode() {
 		return code;
 	}
 
-	public void setCode(int code)
-	{
+	public void setCode(int code) {
 		this.code = code;
 	}
 

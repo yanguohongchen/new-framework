@@ -6,6 +6,8 @@ public class UserVo
 	private String pasword;
 	private long userid;
 	private String nickname;
+	private String mobile;
+	private String email;
 
 	public String getUsername()
 	{
@@ -46,5 +48,23 @@ public class UserVo
 	{
 		this.nickname = nickname;
 	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	
 
 }

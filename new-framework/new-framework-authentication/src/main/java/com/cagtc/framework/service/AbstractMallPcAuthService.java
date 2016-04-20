@@ -5,16 +5,26 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cagtc.framework.auth.SessionData;
+
 public abstract class AbstractMallPcAuthService implements IMallPcAuthService {
 
 	@Autowired
 	private ITokenService tokenService;
 
-	@Override
-	public void auth(HttpServletRequest request, HttpServletResponse response) {
-		String username = login();
-		tokenService.createSessionData(username);
+	@Autowired
+	private ICookieService cookieService;
 
+	@Override
+	public SessionData auth(HttpServletRequest request, HttpServletResponse response) {
+		String username = readUserInfoFromCookie(request);
+		if (username != null && !username.equals("")) {
+			SessionData tokenData = tokenService.createSessionData(username);
+			String token = tokenData.getAccessToken();
+			cookieService.saveCookie(response, token);
+			return tokenData;
+		}
+		return new SessionData();
 	}
 
 	/**
@@ -22,6 +32,6 @@ public abstract class AbstractMallPcAuthService implements IMallPcAuthService {
 	 * 
 	 * @return
 	 */
-	public abstract String login();
+	public abstract String readUserInfoFromCookie(HttpServletRequest request);
 
 }

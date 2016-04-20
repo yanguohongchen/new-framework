@@ -20,4 +20,10 @@ public interface IUserVoService {
 	 * @throws BusinessException
 	 */
 	public void loginValid(String username, String password);
+
+	/**
+	 * 通过用户名获取用户信息
+	 * @param userId
+	 */
+	public UserVo getUserVoByUserId(long userId);
 }
